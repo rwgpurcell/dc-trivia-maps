@@ -34,6 +34,9 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
   
+  filteredVenues <- reactive({
+    filter(venueData,Day %in% input$daySelect)
+  })  
   
   output$mymap <- renderLeaflet({
     leaflet(data = venueData) %>%
@@ -43,6 +46,17 @@ server <- function(input, output, session) {
       addMarkers(label=~Venue,
                  popup=paste(venueData$Venue,"<br>",venueData$Day,"at",venueData$Time))
   })
+  
+  observe({
+    venues <- filteredVenues()
+    leafletProxy("mymap", data = venues) %>%
+      clearMarkers() %>%
+      addMarkers(label=~Venue,
+                 popup=paste(venues$Venue,"<br>",venues$Day,"at",venues$Time))
+  })
+  
 }
+
+
 
 shinyApp(ui, server)
