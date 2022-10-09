@@ -9,12 +9,13 @@ import requests
 import os
 import pandas as pd
 import time
+from secrets import GOOGLE_MAPS_API_KEY
 
 GOOGLE_MAPS_API_URL = 'https://maps.googleapis.com/maps/api/geocode/json'
 
 params = {
     'address': '',
-    'key':os.environ['GOOGLE_API_KEY'] # Don't keep your API key in your code
+    'key':GOOGLE_MAPS_API_KEY # Don't keep your API key in your code
 }
 
 venues = pd.read_csv('trivia_venues.csv',index_col=0)

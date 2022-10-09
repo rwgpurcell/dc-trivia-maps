@@ -48,76 +48,77 @@ WHERE = "/where/is-trivia"
 
 DAYS = ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"]
 
+if __name__ == "__main__":
 
-raw_html = simple_get(SITE+WHERE)
-print(len(raw_html))
+    raw_html = simple_get(SITE+WHERE)
+    print(len(raw_html))
 
-html = BeautifulSoup(raw_html, 'html.parser')
-dcvenues = html.find_all("a",href=re.compile("^/venues/dc"))
-mdvenues = html.find_all("a",href=re.compile("^/venues/maryland"))
-vavenues = html.find_all("a",href=re.compile("^/venues/virginia"))
-
-venues = dcvenues + mdvenues + vavenues
-
-venues = [tag for tag in venues if tag.string!=None]
-n = len(venues)
-venueUrls = [tag.get('href') for tag in venues]
-
-venueNames = [tag.string for tag in venues]
-#print(venues[1].get('href'))
-#print(venues[1].text)
-print(len(venueNames))
-print(venues[:5])
-print(venueNames[:5])
-print(venueUrls[:5])
-
-venueTimes = [None]*n
-venueDays = [None]*n
-venueAddresses = [None]*n
-i=0
-for tag in venues:  
-    raw_html = simple_get(SITE+tag.get('href'))
-    #print(len(raw_html))
     html = BeautifulSoup(raw_html, 'html.parser')
+    dcvenues = html.find_all("a",href=re.compile("^/venues/dc"))
+    mdvenues = html.find_all("a",href=re.compile("^/venues/maryland"))
+    vavenues = html.find_all("a",href=re.compile("^/venues/virginia"))
 
-    timeTag = html.find("h5")
-    #print(timeTag.text)
-    venueDays[i],venueTimes[i] = timeTag.text.split(" at ")
-    table = html.find_all('div',attrs={"class":"four columns"})
-    addressTag = table[-1].find('p')
-    for br in addressTag.find_all("br"):
-        br.replace_with("\n")
+    venues = dcvenues + mdvenues + vavenues
 
-    venueAddresses[i] = addressTag.text
-    #print(addressTag.text)
-    i += 1
-    time.sleep(1)
-    print(i)
-    #for x in table:
-    #    print(x.find('p'))
-    #    addressTag = x.find('p')
-    #addressTags = html.descendants.find("p",string=re.compile("Washington, DC 2"))
-    #print(addressTag.text)
-    #print(addressTag.text)
-    #print(timeTag.text)
+    venues = [tag for tag in venues if tag.string!=None]
+    n = len(venues)
+    venueUrls = [tag.get('href') for tag in venues]
 
-venueData = pd.DataFrame(data={'Venue':venueNames,
-    'Address':venueAddresses,'Day':venueDays,'Time':venueTimes, 'Host':'District Trivia'})
+    venueNames = [tag.string for tag in venues]
+    #print(venues[1].get('href'))
+    #print(venues[1].text)
+    print(len(venueNames))
+    print(venues[:5])
+    print(venueNames[:5])
+    print(venueUrls[:5])
 
-#SITE = 'https://triviakings.com/locations/'
+    venueTimes = [None]*n
+    venueDays = [None]*n
+    venueAddresses = [None]*n
+    i=0
+    for tag in venues:  
+        raw_html = simple_get(SITE+tag.get('href'))
+        #print(len(raw_html))
+        html = BeautifulSoup(raw_html, 'html.parser')
 
-#raw_html = simple_get(SITE)
-#print(len(raw_html))
+        timeTag = html.find("h5")
+        #print(timeTag.text)
+        venueDays[i],venueTimes[i] = timeTag.text.split(" at ")
+        table = html.find_all('div',attrs={"class":"four columns"})
+        addressTag = table[-1].find('p')
+        for br in addressTag.find_all("br"):
+            br.replace_with("\n")
 
-#html = BeautifulSoup(raw_html, 'html.parser')
-#venueTable = html.find('table')
+        venueAddresses[i] = addressTag.text
+        #print(addressTag.text)
+        i += 1
+        time.sleep(1)
+        print(i)
+        #for x in table:
+        #    print(x.find('p'))
+        #    addressTag = x.find('p')
+        #addressTags = html.descendants.find("p",string=re.compile("Washington, DC 2"))
+        #print(addressTag.text)
+        #print(addressTag.text)
+        #print(timeTag.text)
 
-#dfs = pd.read_html(SITE)
+    venueData = pd.DataFrame(data={'Venue':venueNames,
+        'Address':venueAddresses,'Day':venueDays,'Time':venueTimes, 'Host':'District Trivia'})
 
-#venueData2 = dfs[0]
+    #SITE = 'https://triviakings.com/locations/'
 
-#venueData2 = venueData2. 
+    #raw_html = simple_get(SITE)
+    #print(len(raw_html))
 
-#venueData2.to_csv('test.csv')
+    #html = BeautifulSoup(raw_html, 'html.parser')
+    #venueTable = html.find('table')
 
-venueData.to_csv('trivia_venues.csv')
+    #dfs = pd.read_html(SITE)
+
+    #venueData2 = dfs[0]
+
+    #venueData2 = venueData2. 
+
+    #venueData2.to_csv('test.csv')
+
+    venueData.to_csv('trivia_venues.csv')

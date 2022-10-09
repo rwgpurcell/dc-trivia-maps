@@ -1,2 +1,6 @@
 .vscode/
 env.ps1
+venv/
+my_secrets*
+__pycache__/
+.Rhistory

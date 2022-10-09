@@ -6,12 +6,12 @@ library(leaflet)
 #setwd(PATH)
 DATA_DIR <- file.path("")
 
-venueData <- read_csv("trivia_venues_loc.csv")
+venueData <- read_csv("trivia_venues_loc_new.csv")
 
 days <- c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")
 dayColors <- c("red","blue","orange","green","purple","cyan","pink")
 names(dayColors) <- days
-days <- days[days %in% unique(venueData$Day)]
+days <- days[days %in% unique(venueData$day)]
 
 
 r_colors <- rgb(t(col2rgb(colors()) / 255))
@@ -43,7 +43,7 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   
   filteredVenues <- reactive({
-    filter(venueData,Day %in% input$daySelect)
+    filter(venueData,day %in% input$daySelect)
   })  
   
   output$mymap <- renderLeaflet({
@@ -51,14 +51,14 @@ server <- function(input, output, session) {
       addProviderTiles(providers$Stamen.TonerLite,
                        options = providerTileOptions(noWrap = TRUE)
       ) %>%
-      addAwesomeMarkers(label=~Venue,icon=icons,
-                 popup=paste(venueData$Venue,"<br>",venueData$Day,"at",venueData$Time))
+      addAwesomeMarkers(label=~name,icon=icons,
+                 popup=paste(venueData$name,"<br>",venueData$day,"at",venueData$time))
   })
   
   observe({
     venues <- filteredVenues()
     if(length(venues)>0){
-      myColors <- unname(dayColors[venues$Day])
+      myColors <- unname(dayColors[venues$day])
       icons <- awesomeIcons(
         icon = 'glyphicon-question-sign',
         iconColor = 'white',
@@ -67,8 +67,8 @@ server <- function(input, output, session) {
       )
       leafletProxy("mymap", data = venues) %>%
         clearMarkers() %>%
-        addAwesomeMarkers(label=~Venue,icon=icons,
-                          popup=paste(venues$Venue,"<br>",venues$Day,"at",venues$Time))
+        addAwesomeMarkers(label=~name,icon=icons,
+                          popup=paste(venues$name,"<br>",venues$day,"at",venues$time))
     } else {
       leafletProxy("mymap") %>%
         clearMarkers()
